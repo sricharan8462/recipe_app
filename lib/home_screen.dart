@@ -20,7 +20,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void toggleFavorite(String recipeName) {
     setState(() {
-      final index = favoriteRecipes.indexWhere((fav) => fav["name"] == recipeName);
+      final index =
+          favoriteRecipes.indexWhere((fav) => fav["name"] == recipeName);
       if (index != -1) {
         favoriteRecipes.removeAt(index);
       } else {
@@ -37,12 +38,13 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text("Recipe Book"),
         actions: [
           IconButton(
-            icon: Icon(Icons.favorite, color: Colors.red),
+            icon: Icon(Icons.favorite, color: Colors.red, size: 28),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FavoritesScreen(favoriteRecipes: favoriteRecipes),
+                  builder: (context) =>
+                      FavoritesScreen(favoriteRecipes: favoriteRecipes),
                 ),
               );
             },
@@ -53,35 +55,93 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           // ✅ Welcome Logo
           Padding(
-            padding: EdgeInsets.all(10),
-            child: Image.asset("assets/logo.jpg", height: 120),
+            padding: EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Image.asset("assets/logo.jpg", height: 120),
+                SizedBox(height: 10),
+                Text(
+                  "Welcome to Recipe App!",
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "Discover and cook delicious recipes!",
+                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                ),
+              ],
+            ),
           ),
-          Text("Welcome to Recipe App!", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
 
-          // ✅ Recipe List with Images
+          // ✅ Recipe Grid View (Better UI)
           Expanded(
-            child: ListView.builder(
+            child: GridView.builder(
+              padding: EdgeInsets.all(12),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // 🟢 Two columns for better layout
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 0.85, // Adjusted for better layout
+              ),
               itemCount: recipes.length,
               itemBuilder: (context, index) {
-                return Card(
-                  margin: EdgeInsets.all(10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.all(10),
-                    leading: Image.asset(recipes[index]["image"]!, width: 80, height: 80, fit: BoxFit.cover),
-                    title: Text(recipes[index]["name"]!, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailsScreen(
-                            recipe: recipes[index]["name"]!,
-                            onFavoriteToggle: toggleFavorite,
-                            isFavorite: favoriteRecipes.any((fav) => fav["name"] == recipes[index]["name"]),
+                bool isFavorite = favoriteRecipes
+                    .any((fav) => fav["name"] == recipes[index]["name"]);
+
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailsScreen(
+                          recipe: recipes[index]["name"]!,
+                          onFavoriteToggle: toggleFavorite,
+                          isFavorite: isFavorite,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(15)),
+                          child: Image.asset(
+                            recipes[index]["image"]!,
+                            height: 120,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
                           ),
                         ),
-                      );
-                    },
+                        SizedBox(height: 10),
+                        Text(
+                          recipes[index]["name"]!,
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87),
+                        ),
+                        SizedBox(height: 5),
+                        IconButton(
+                          icon: Icon(
+                              isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: Colors.red),
+                          onPressed: () {
+                            toggleFavorite(recipes[index]["name"]!);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
