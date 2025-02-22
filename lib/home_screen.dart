@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'details_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final List<String> recipes = [
@@ -6,7 +7,7 @@ class HomeScreen extends StatelessWidget {
     "Pancakes",
     "Salad",
     "Burger",
-    "Soup",
+    "Pizza"
   ];
 
   @override
@@ -18,6 +19,14 @@ class HomeScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           return ListTile(
             title: Text(recipes[index]),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DetailsScreen(recipe: recipes[index]),
+                ),
+              );
+            },
           );
         },
       ),
